@@ -1,3 +1,4 @@
+
 /* Programacao Combate V2.2.4.ino
  * Código para controle de robô beetleweight
  * Autores: Isabella Galvão, Marcus Vinícius, Kewin Lima e Marina Collier.
@@ -24,6 +25,11 @@ int MOTOR_E2 = 5;
 int MOTOR_D1 = 9;
 int MOTOR_D2 = 10;
 
+//Define os sinais de RUD para a condição de inversão de movimento *ALTERAR APÓS LEITURA DE CANAL NO CONTROLE*
+#define NORMAL 0
+#define INVERTE 0
+
+
 //Caso 1 a saida será pela serial caso 0 será a resposta para os motores
 #define DEBUG 0
 
@@ -39,7 +45,7 @@ int MOTOR_D2 = 10;
 //Define as entradas de sinal do controle
 #define PORTA_AILE A0
 #define PORTA_ELE A1
-#define PORTA_THR A2
+#define PORTA_RUD A2
 
 //Constantes para leitura do controle (Devem ser calibradas)
 #define ENTRADA_MAX 1894
@@ -54,7 +60,8 @@ int aile_sinal = 0;
 int ele_sinal = 0;
 int ele_potencia = 0;
 int aile_potencia = 0;
-int thr_sinal=0;
+int rud_sinal=0;
+bool rud_bin=1;
 
 //limiar aile ele
 #define LIMIAR_MAX_AILE 60
@@ -67,7 +74,7 @@ void setup()
   // put your setup code here, to run once:
   pinMode(PORTA_AILE, INPUT);
   pinMode(PORTA_ELE, INPUT);
-  pinMode(PORTA_THR, INPUT);
+  pinMode(PORTA_RUD, INPUT);
 
   pinMode(MOTOR_E1, OUTPUT);
   pinMode(MOTOR_E2, OUTPUT);
@@ -80,22 +87,34 @@ void setup()
 
 void loop()
 {
-   thr_sinal = pulseIn(PORTA_THR, HIGH);
-   if(thr_sinal > 1800){
-   MOTOR_E1 = 6;
-   MOTOR_E2 = 5;
-   MOTOR_D1 = 9;
-   MOTOR_D2 = 10;
-  ;// Serial.println("Normal");
-   }
- else if( thr_sinal < 1320){
-   MOTOR_E1 = 5;
-   MOTOR_E2 = 6;
-   MOTOR_D1 = 10;
-   MOTOR_D2 = 9;
- // Serial.println("Invertido");
- }
+   rud_sinal = pulseIn(PORTA_RUD, HIGH);
+   /*//DETERMINANDO REGIGÃO PARA INVERSÃO DE MOVIMENTOS
+    * if(rud_sinal > NORMAL ){
+    *   rud_bin = 1;
+    * }
+    * else if{rud_sinal < INVERTE){
+    *   rud_bin = 0;
+    * }
+    */
+  do{
+      MOTOR_E1 = 6;
+      MOTOR_E2 = 5;
+      MOTOR_D1 = 9;
+      MOTOR_D2 = 10;
+      locomocao();
+      // Serial.println("Normal");
+      }while(rud_bin == 1);
+  do{
+      MOTOR_E1 = 5;
+      MOTOR_E2 = 6;
+      MOTOR_D1 = 10;
+      MOTOR_D2 = 9;
+      locomocao();
+      // Serial.println("Invertido");
+    }while(rud_bin == 0);
+}
 
+void locomocao(){
   //leitura dos canais do controle
   aile_sinal = filtro(PORTA_AILE);
   ele_sinal = filtro(PORTA_ELE);
