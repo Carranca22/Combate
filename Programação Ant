@@ -25,13 +25,13 @@ int MOTOR_E2 = 6;
 int MOTOR_D1 = 9;
 int MOTOR_D2 = 10;
 
-//Define os sinais de RUD para a condição de inversão de movimento *ALTERAR APÓS LEITURA DE CANAL NO CONTROLE*
+//Define os sinais de thr para a condição de inversão de movimento *ALTERAR APÓS LEITURA DE CANAL NO CONTROLE*
 #define NORMAL 0
 #define INVERTE 0
 
 
 //Caso 1 a saida será pela serial caso 0 será a resposta para os motores
-#define DEBUG 1
+#define DEBUG 0
 
 // [ 1 ]- Imprime a saida aile e ele, [ 2 ] - imprime a resposta para os motores, [ 3 ] - imprime ambos
 #define TIPO_DE_DEBUG 3
@@ -45,7 +45,7 @@ int MOTOR_D2 = 10;
 //Define as entradas de sinal do controle
 #define PORTA_AILE A1
 #define PORTA_ELE A0
-#define PORTA_RUD A2
+#define PORTA_THR A5
 
 //Constantes para leitura do controle (Devem ser calibradas)
 #define ENTRADA_MAX 1894
@@ -60,8 +60,8 @@ int aile_sinal = 0;
 int ele_sinal = 0;
 int ele_potencia = 0;
 int aile_potencia = 0;
-int rud_sinal=0;
-bool rud_bin=1;
+int thr_sinal=0;
+bool thr_bin=1;
 
 //limiar aile ele
 #define LIMIAR_MAX_AILE 70
@@ -74,7 +74,7 @@ void setup()
   // put your setup code here, to run once:
   pinMode(PORTA_AILE, INPUT);
   pinMode(PORTA_ELE, INPUT);
-  pinMode(PORTA_RUD, INPUT);
+  pinMode(PORTA_THR, INPUT);
 
   pinMode(MOTOR_E1, OUTPUT);
   pinMode(MOTOR_E2, OUTPUT);
@@ -87,6 +87,20 @@ void setup()
 
 void loop()
 {
+  thr_sinal = pulseIn(PORTA_THR, HIGH);
+  if (thr_sinal >= 1800){
+    MOTOR_E1 = 5;
+    MOTOR_E2 = 6;
+    MOTOR_D1 = 9;
+    MOTOR_D2 = 10;
+ }
+ else if( thr_sinal <= 1320){
+    MOTOR_E1 = 6;
+    MOTOR_E2 = 5;
+    MOTOR_D1 = 10;
+    MOTOR_D2 = 9;
+}
+  
    locomocao();
 }
 
@@ -361,3 +375,5 @@ void printData()
   Serial.print(" Z=");
   Serial.println(gForceZ);
 }
+
+
