@@ -45,7 +45,7 @@ int MOTOR_D2 = 10;
 //Define as entradas de sinal do controle
 #define PORTA_AILE A1
 #define PORTA_ELE A0
-#define PORTA_THR A5
+#define PORTA_THR A4
 
 //Constantes para leitura do controle (Devem ser calibradas)
 #define ENTRADA_MAX 1894
