@@ -1,6 +1,7 @@
+
 /* Programacao Combate V2.2.4.ino
  * Código para controle de robô beetleweight
- * Autores: Isabella Galvão, Marcus Vinícius e Kewin Lima.
+ * Autores: Isabella Galvão, Marcus Vinícius, Kewin Lima e Marina Collier.
  * 16/03/2015
  */
 //Inclui biblioteca para acesso a funções matemáticas avançadas
@@ -24,11 +25,16 @@ int MOTOR_E2 = 6;
 int MOTOR_D1 = 9;
 int MOTOR_D2 = 10;
 
+//Define os sinais de RUD para a condição de inversão de movimento *ALTERAR APÓS LEITURA DE CANAL NO CONTROLE*
+#define NORMAL 0
+#define INVERTE 0
+
+
 //Caso 1 a saida será pela serial caso 0 será a resposta para os motores
-#define DEBUG 0
+#define DEBUG 1
 
 // [ 1 ]- Imprime a saida aile e ele, [ 2 ] - imprime a resposta para os motores, [ 3 ] - imprime ambos
-#define TIPO_DE_DEBUG 2
+#define TIPO_DE_DEBUG 3
 
 //Define o numero de interaões do filtro das entradas do controle
 #define NUMERO_DE_INTERACOES 1
@@ -37,8 +43,9 @@ int MOTOR_D2 = 10;
 #define DELAY 0
 
 //Define as entradas de sinal do controle
-#define PORTA_AILE A0
-#define PORTA_ELE A1
+#define PORTA_AILE A1
+#define PORTA_ELE A0
+#define PORTA_RUD A2
 
 //Constantes para leitura do controle (Devem ser calibradas)
 #define ENTRADA_MAX 1894
@@ -53,62 +60,44 @@ int aile_sinal = 0;
 int ele_sinal = 0;
 int ele_potencia = 0;
 int aile_potencia = 0;
+int rud_sinal=0;
+bool rud_bin=1;
 
 //limiar aile ele
-#define LIMIAR_MAX_AILE 50
-#define LIMIAR_MIN_AILE - 50
-#define LIMIAR_MAX_ELE 50
-#define LIMIAR_MIN_ELE - 50
+#define LIMIAR_MAX_AILE 70
+#define LIMIAR_MIN_AILE - 70
+#define LIMIAR_MAX_ELE 70
+#define LIMIAR_MIN_ELE - 70
 
 void setup()
 {
   // put your setup code here, to run once:
   pinMode(PORTA_AILE, INPUT);
   pinMode(PORTA_ELE, INPUT);
+  pinMode(PORTA_RUD, INPUT);
 
   pinMode(MOTOR_E1, OUTPUT);
   pinMode(MOTOR_E2, OUTPUT);
   pinMode(MOTOR_D1, OUTPUT);
   pinMode(MOTOR_D2, OUTPUT);
   Serial.begin(9600);
-  Wire.begin();
-  setupMPU(); // Função que inicializa o giroscopio e suas leituras.
+ // Função que inicializa o giroscopio e suas leituras.
   Serial.flush();
 }
 
 void loop()
 {
-  recordAccelRegisters();
-  /* essa é a condição de inversão dos motores, caso o valor seja menor que 0,005, caso o contrário ou seja, quando for positivo 
-  OBS: o 0,005 se refere ao 0 real, pois há ruído eletrônico na leitura, e esse foi o menor valor encontrado*/
-  
-  if (gForceZ < 0.005)
-  {
-    MOTOR_E1 = 6;
-    MOTOR_E2 = 5;
-    MOTOR_D1 = 10;
-    MOTOR_D2 = 9;
-    Serial.println("INVERTIDO");
-    // delay(300);
-  }
-  /* Para o restante dos valores, ou seja "virado para cima" os motores não irão se inverter e , a rotação será a mesma*/
-  else
-  {
-    MOTOR_E1 = 5;
-    MOTOR_E2 = 6;
-    MOTOR_D1 = 9;
-    MOTOR_D2 = 10;
-    Serial.println("NORMAL");
-    // delay(300);
-  }
+   locomocao();
+}
 
+void locomocao(){
   //leitura dos canais do controle
   aile_sinal = filtro(PORTA_AILE);
   ele_sinal = filtro(PORTA_ELE);
   //constrain(aile_sinal, SAIDA_MIN, SAIDA_MAX);
   //constrain(ele_sinal, SAIDA_MIN, SAIDA_MAX);
   //Condicao para que o controle esteja em comunicacao com o receptor
-  if (aile_sinal != 0 || ele_sinal != 0)
+  if (aile_sinal != 0 && ele_sinal != 0)
   {
     ele_potencia = potenciaPwm(ele_sinal);
     aile_potencia = potenciaPwm(aile_sinal);
@@ -170,7 +159,7 @@ void loop()
     }
   }
   //CONDIÇÃO PARADO PARA CONTROLE DESLIGADO
-  else if ((aile_sinal == 0) && (ele_sinal == 0))
+  else if ((aile_sinal == 0) || (ele_sinal == 0))
   {
     movimentacao(0, 0);
     imprimirDebug(0, 0, "TRAVADO");
@@ -191,28 +180,28 @@ void movimentacao(int potenciaEsquerda, int potenciaDireita)
     potenciaDireita = 0;
   }
 
-  if (potenciaEsquerda > ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita > ((SAIDA_MAX + SAIDA_MIN) / 2)) // codição para os dois motores girarem para frente
+  if (potenciaEsquerda >= ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita >= ((SAIDA_MAX + SAIDA_MIN) / 2)) // codição para os dois motores girarem para frente
   {
     analogWrite(MOTOR_E1, abs(potenciaEsquerda));
     analogWrite(MOTOR_E2, 0);
     analogWrite(MOTOR_D1, abs(potenciaDireita));
     analogWrite(MOTOR_D2, 0);
   }
-  else if (potenciaEsquerda < ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita < ((SAIDA_MAX + SAIDA_MIN) / 2)) // condição para os dois motores girarem para tras 
+  else if (potenciaEsquerda <= ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita <= ((SAIDA_MAX + SAIDA_MIN) / 2)) // condição para os dois motores girarem para tras 
   {
     analogWrite(MOTOR_E1, 0);
     analogWrite(MOTOR_E2, abs(potenciaEsquerda));
     analogWrite(MOTOR_D1, 0);
     analogWrite(MOTOR_D2, abs(potenciaDireita));
   }
-  else if (potenciaEsquerda < ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita > ((SAIDA_MAX + SAIDA_MIN) / 2)) // condição motor direita frente e esquerda tras
+  else if (potenciaEsquerda <= ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita >= ((SAIDA_MAX + SAIDA_MIN) / 2)) // condição motor direita frente e esquerda tras
   {
     analogWrite(MOTOR_E1, 0);
     analogWrite(MOTOR_E2, abs(potenciaEsquerda));
     analogWrite(MOTOR_D1, abs(potenciaDireita));
     analogWrite(MOTOR_D2, 0);
   }
-  else if (potenciaEsquerda > ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita < ((SAIDA_MAX + SAIDA_MIN) / 2)) // condição motor direita tras e esquerda frente
+  else if (potenciaEsquerda >= ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita <= ((SAIDA_MAX + SAIDA_MIN) / 2)) // condição motor direita tras e esquerda frente
   {
     analogWrite(MOTOR_E1, abs(potenciaEsquerda));
     analogWrite(MOTOR_E2, 0);
