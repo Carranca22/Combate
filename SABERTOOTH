@@ -1,0 +1,80 @@
+/* Programacao Combate V2.2.4.ino
+ * Código para controle de robô beetleweight
+ * Autores: Isabella Galvão, Marcus Vinícius, Kewin Lima e Marina Collier.
+ * 16/03/2015
+ */
+//Inclui biblioteca para acesso a funções matemáticas avançadas
+#include <math.h> 
+#include <servo.h>
+
+Servo ST1, ST2, ST3, ST4;
+
+/*Define os pinos que os motores estarão conectados
+essas variaveis irão se alterar de acordo com o ângulo em Z */
+/*int MOTOR_E1 = 5;
+int MOTOR_E2 = 6;
+int MOTOR_D1 = 9;
+int MOTOR_D2 = 10;*/
+
+//Caso 1 a saida será pela serial caso 0 será a resposta para os motores
+#define DEBUG 0
+
+// [ 1 ]- Imprime a saida aile e ele, [ 2 ] - imprime a resposta para os motores, [ 3 ] - imprime ambos
+#define TIPO_DE_DEBUG 3
+
+//Define o numero de interaões do filtro das entradas do controle
+#define NUMERO_DE_INTERACOES 1
+
+//Define o delay de espera para a vizualização na porta serial
+#define DELAY 0
+
+//Define as entradas de sinal do controle
+#define PORTA_AILE A1
+#define PORTA_ELE A0
+#define PORTA_THR A4
+
+//Constantes para leitura do controle (Devem ser calibradas)
+#define ENTRADA_MAX 1894
+#define ENTRADA_MIN 1102
+
+//Constantes para saida para os motores
+#define SAIDA_MAX 180
+#define SAIDA_MIN 0
+
+//Vão guardar as leituras vindas do controle
+int aile_sinal = 0;
+int ele_sinal = 0;
+int ele_potencia = 0;
+int aile_potencia = 0;
+int thr_sinal=0;
+bool thr_bin=1;
+int power;//limiar aile ele
+#define LIMIAR_MAX_AILE 70
+#define LIMIAR_MIN_AILE - 70
+#define LIMIAR_MAX_ELE 70
+#define LIMIAR_MIN_ELE - 70
+
+void setup()
+{
+  ST1.attach(5, ENTRADA_MIN, ENTRADA_MAX);
+  ST2.attach(6, ENTRADA_MIN, ENTRADA_MAX);
+  ST3.attach(9, ENTRADA_MIN, ENTRADA_MAX);
+  ST4.attach(10,ENTRADA_MIN, ENTRADA_MAX);
+  // put your setup code here, to run once:
+  pinMode(PORTA_AILE, INPUT);
+  pinMode(PORTA_ELE, INPUT);
+  pinMode(PORTA_THR, INPUT);
+  Serial.begin(9600);
+ // Função que inicializa o giroscopio e suas leituras.
+  Serial.flush();
+}
+void loop(){
+  
+}
+
+int limitadorDePotencia(int potencia)
+{
+  if (abs(potencia) < SAIDA_MAX && abs(potencia) < SAIDA_MIN) return (potencia);
+  else if (abs(potencia) > SAIDA_MAX) return (potencia / abs(potencia)) * SAIDA_MAX; // Limitando potencia maxima
+  else if (abs(potencia) < SAIDA_MIN) return (potencia / abs(potencia)) * SAIDA_MIN; //Limitando potencia minima          
+}
