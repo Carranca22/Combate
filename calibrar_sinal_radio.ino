@@ -5,18 +5,6 @@
  */
 //Inclui biblioteca para acesso a funções matemáticas avançadas
 #include <math.h> 
-//Inclui biblioteca para utilizar o giroscopio
-#include <Wire.h>
-
-long accelX, accelY, accelZ;
-float gForceX, gForceY, gForceZ;
-
-long gyroX, gyroY;
-long gyroZ;
-float rotX, rotY;
-float rotZ;
-
-
 /*Define os pinos que os motores estarão conectados
 essas variaveis irão se alterar de acordo com o ângulo em Z */
 int MOTOR_E1 = 5;
@@ -48,18 +36,7 @@ int MOTOR_D2 = 10;
 #define SAIDA_MAX 255
 #define SAIDA_MIN -255
 
-//Vão guardar as leituras vindas do controle
-int aile_sinal = 0;
-int ele_sinal = 0;
-int ele_potencia = 0;
-int aile_potencia = 0;
-
-//limiar aile ele
-#define LIMIAR_MAX_AILE 50
-#define LIMIAR_MIN_AILE - 50
-#define LIMIAR_MAX_ELE 50
-#define LIMIAR_MIN_ELE - 50
-
+//Vão guardar as leituras vindas do cont
 void setup()
 {
   // put your setup code here, to run once:
@@ -71,8 +48,6 @@ void setup()
   pinMode(MOTOR_D1, OUTPUT);
   pinMode(MOTOR_D2, OUTPUT);
   Serial.begin(9600);
-  Wire.begin();
-
   Serial.flush();
 }
 void loop(){
