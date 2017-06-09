@@ -1,9 +1,11 @@
 
-/* Programacao Combate V2.2.4.ino
- * Código para controle de robô beetleweight
- * Autores: Isabella Galvão, Marcus Vinícius, Kewin Lima e Marina Collier.
- * 16/03/2015
- */
+/************************************* PROGRAMAÇÃO COMBATE COM INVERSÃO MANUAL************************************************
+ * Código para controle dos robôs de combate com inversão manual e sem comunicação com sabertooth. ***************************
+ * OBS: Funções de inversão com o GIROSCÓPIO comentadas por motivos de busca por um dispositivo mais resistente a impactos. **
+ *****************************************************************************************************************************
+ * Autores: Isabella Galvão, Marcus Vinícius, Kewin Lima e Marina Collier.****************************************************
+ * 06/06/17 ******************************************************************************************************************
+ * **************************************************************************************************************************/
 //Inclui biblioteca para acesso a funções matemáticas avançadas
 #include <math.h> 
 //Inclui biblioteca para utilizar o giroscopio
