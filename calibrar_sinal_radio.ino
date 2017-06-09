@@ -2,7 +2,7 @@
 //Define as entradas de sinal do controle
 #define PORTA_AILE A0
 #define PORTA_ELE A1
-
+int aile_sinal = 0, ele_sinal = 0;
 //Vão guardar as leituras vindas do cont
 void setup()
 {
