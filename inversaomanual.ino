@@ -9,15 +9,15 @@
 //Inclui biblioteca para acesso a funções matemáticas avançadas
 #include <math.h> 
 //Inclui biblioteca para utilizar o giroscopio
-#include <Wire.h>
+//#include <Wire.h>
 
-long accelX, accelY, accelZ;
-float gForceX, gForceY, gForceZ;
+//long accelX, accelY, accelZ;
+//float gForceX, gForceY, gForceZ;
 
-long gyroX, gyroY;
-long gyroZ;
-float rotX, rotY;
-float rotZ;
+//long gyroX, gyroY;
+//long gyroZ;
+//float rotX, rotY;
+//float rotZ;
 
 
 /*Define os pinos que os motores estarão conectados
@@ -185,15 +185,15 @@ void locomocao(){
 //Função que cuida da movimentação dos motores
 void movimentacao(int potenciaEsquerda, int potenciaDireita)
 {
-  if (potenciaEsquerda != 0 && potenciaDireita != 0)
-  {
-    potenciaEsquerda = limitadorDePotencia(potenciaEsquerda);
-    potenciaDireita = limitadorDePotencia(potenciaDireita);
-  }
-  else
+  if (potenciaEsquerda == 0 && potenciaDireita == 0)
   {
     potenciaEsquerda = 0;
     potenciaDireita = 0;
+  }
+  else
+  {
+       potenciaEsquerda = limitadorDePotencia(potenciaEsquerda);
+       potenciaDireita = limitadorDePotencia(potenciaDireita);
   }
 
   if (potenciaEsquerda >= ((SAIDA_MAX + SAIDA_MIN) / 2) && potenciaDireita >= ((SAIDA_MAX + SAIDA_MIN) / 2)) // codição para os dois motores girarem para frente
@@ -298,6 +298,8 @@ void imprimirDebug(int potenciaEsquerdo, int potenciaDireito, const char direcao
     }
   }
 }
+void func_gyro ()
+{
 void setupMPU()
 {
   Wire.beginTransmission(0b1101000); //Isso é o endereço I2C do MPU (b1101000/b1101001 para AC0 low/high datasheet sec. 9.2)
@@ -376,6 +378,7 @@ void printData()
   //Serial.print(gForceY);
   Serial.print(" Z=");
   Serial.println(gForceZ);
+}
 }
 
 
