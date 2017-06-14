@@ -298,6 +298,7 @@ void imprimirDebug(int potenciaEsquerdo, int potenciaDireito, const char direcao
     }
   }
 }
+/*
 void func_gyro ()
 {
 void setupMPU()
@@ -341,6 +342,7 @@ void processAccelData()
 /*Função que libera 6 registradores para a leitura do sinal
 e desloca 2 bytes, a partir da subtração de 8-6, pra reduzir a leitura de ~1000 
 até ~0-100 e a função wire.read(), trabalha com o sinal da variavel*/
+/*
 void recordGyroRegisters()
 {
   Wire.beginTransmission(0b1101000); //endereço I2C do MPU
@@ -355,13 +357,15 @@ void recordGyroRegisters()
 }
 /*Essa função faz com que várias leituras sejam realizadas, fazendo 
 com que não haja probabilidade de a variavel se manter fixa ou aumentar com o tempo*/
+/*
 void processGyroData()
 {
  // rotX = gyroX / 131.0;
  //rotY = gyroY / 131.0;
   rotZ = gyroZ / 131.0;
 }
-
+*/
+/*
 void printData()
 {
   Serial.print("Gyro (graus)"); //imprime o angulo em graus
@@ -380,5 +384,4 @@ void printData()
   Serial.println(gForceZ);
 }
 }
-
-
+*/
