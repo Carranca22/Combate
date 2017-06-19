@@ -33,8 +33,8 @@ int MOTOR_D2 = 10;*/
 #define PORTA_THR A4
 
 //Constantes para leitura do controle (Devem ser calibradas)
-#define ENTRADA_MAX 1894
-#define ENTRADA_MIN 1102
+int ENTRADA_MAX = 1894;
+int ENTRADA_MIN = 1102;
 
 //Constantes para saida para os motores
 #define SAIDA_MAX 180
@@ -65,6 +65,15 @@ void setup()
   Serial.flush();
 }
 void loop(){
+  thr_sinal = pulseIn(PORTA_THR, HIGH);
+  if (thr_sinal >= 1800){
+    ENTRADA_MAX = 1894;
+    ENTRADA_MIN = 1102;
+ }
+ else if( thr_sinal <= 1320){
+    ENTRADA_MIN = 1894;
+    ENTRADA_MAX = 1102;
+}
   locomocao();
   
 }
