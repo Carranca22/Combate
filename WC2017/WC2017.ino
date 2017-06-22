@@ -254,14 +254,14 @@ void virgulino ()
 {
   ch5_sinal = pulseIn(PORTA_CH5, HIGH);
   //NORMAL
-  if (thr_sinal >= 1400){
+  if (ch5_sinal >= 1400){
     MOTOR_E1 = 5;
     MOTOR_E2 = 6;
     MOTOR_D1 = 9;
     MOTOR_D2 = 10;
  }
   //INVERTE
- else if( thr_sinal < 1400){
+ else if( ch5_sinal < 1400){
     MOTOR_E1 = 6;
     MOTOR_E2 = 5;
     MOTOR_D1 = 10;
