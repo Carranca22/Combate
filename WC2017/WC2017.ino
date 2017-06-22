@@ -266,7 +266,8 @@ void virgulino ()
     MOTOR_E2 = 5;
     MOTOR_D1 = 10;
     MOTOR_D2 = 9;
-}
+ }
+}  
     
 
 //Imprime na serial caso o DEBUG seja verdadeiro
